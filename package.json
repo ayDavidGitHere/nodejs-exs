@@ -1,0 +1,36 @@
+{
+  "name": "nodejs exs",
+  "version": "1.0.0",
+  "description": "Nodejs exs app",
+  "main": "app.js",
+  "scripts": {
+    "test": "node app.js",
+    "start": "node app.js"
+  },
+  "dependencies": {
+    "request": "*",
+    "socket.io": "*",
+    "express": "*",
+    "mongodb": "*",
+    "mongoose": "*",
+    "crypto": "*",
+    "http": "*",
+    "body-parser": "*"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/aydavidgithere/nodejs-exs.git"
+  },
+  "keywords": [
+    "nodejs",
+    "modelstructure",
+    "aydavid"
+  ],
+  "author": "aydavidgithere",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/aydavidgithere/nodejs-exs/issues"
+  },
+  "homepage": "https://github.com/aydavidgithere/nodejs-exs#readme",
+  "localdir": "/storage/emulated/0/compilerinternalsonyx/projects/nodejs/nodejs_exs"
+}

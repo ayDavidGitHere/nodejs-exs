@@ -1,0 +1,11 @@
+
+<%- include('partials/header') -%>
+<div id="welcome-block">
+    <h1 id="headline-pg">Welcome to File Upload </h1>
+    <p id="headline-base-pg">Get all your products here on model store.
+    Browse our store and select your choice product</p>
+    <form action="/api/fileupload" method="post">
+        <input type="file" accept="*" value="Upload file">
+        <input type="submit">
+    </form>
+</div>
