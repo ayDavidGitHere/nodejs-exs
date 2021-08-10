@@ -37,6 +37,12 @@ var mainController = {
     
     
  },
+ socketcom: function(req, res, next){
+     res.end("Seen")
+ }
+ 
+ 
+ 
  
  
 }

@@ -1,11 +1,11 @@
 {
-  "name": "nodejs exs",
+  "name": "nodejs_exs",
   "version": "1.0.0",
   "description": "Nodejs exs app",
   "main": "app.js",
   "scripts": {
-    "test": "node app.js",
-    "start": "node app.js"
+    "test": "node src/app-server/app.js",
+    "start": "node src/app-server/app.js"
   },
   "dependencies": {
     "request": "*",

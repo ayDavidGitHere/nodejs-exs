@@ -33,12 +33,31 @@ example_fileupload: function(app){
     router.route('/example/fileupload').get(function(req, res, next){
         res.render("fileupload", {
             Site_Title: "Nodejs exs",
-            Page_Title: "Home"
+            Page_Title: "File Upload"
         });
         
     });
     return router;
+},
+example_socketcom_page: function(app){
+    var router = express.Router();
+    router.route('/example/socketcom').get(function(req, res, next){
+        res.render("socketcom", {
+            Site_Title: "Nodejs exs",
+            Page_Title: "Socket.io communication "
+        });
+        
+    });
+    return router;
+},
+example_socketcom_control: function(app){
+    var router = express.Router();
+    router.route('/api/socketcom').post(mainController.socketcom);
+    return router;
 }
+
+
+
 
 ,};
 module.exports = routes;
