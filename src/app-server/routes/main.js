@@ -44,7 +44,8 @@ example_socketcom_page: function(app){
     router.route('/example/socketcom').get(function(req, res, next){
         res.render("socketcom", {
             Site_Title: "Nodejs exs",
-            Page_Title: "Socket.io communication "
+            Page_Title: "Socket.io communication ",
+            SITE_URL: config.getHTTPUrl(),
         });
         
     });

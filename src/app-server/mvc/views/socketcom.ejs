@@ -12,7 +12,14 @@
     <script src="https://aydavidgithere.github.io/res/lidsacaebasic.js">
     </script>
     <script src="http://localhost:1111/Codehelps/codehelp.js"></script>
-    <script src="../../mvc/controller/messenger.js" defer></script>
+    <script alt="../../public/mvc/controllers/messenger.js" 
+            alt="/mvc/controllers/messenger.js"
+            src="<%=SITE_URL%>/static/mvc/controllers/messenger.js"
+            id="messenger_script"
+    ></script>
+    <script>
+        document.write(document.getElementById("messenger_script").src)
+    </script>
     <noscript>
       <strong>Abeg, try dey use Javascript.</strong>
     </noscript>
@@ -22,4 +29,5 @@
 <body >
     <div><%= Page_Title %></div>
     <button id="sendmessage-but">Send Message But</button>
+    <p>  </p>
 </body>

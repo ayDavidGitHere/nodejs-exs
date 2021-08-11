@@ -1,6 +1,7 @@
 var config = {
 VERSION: 1,
 BUILD: 1,
+HOST: '127.0.0.1',
 URL: 'http://127.0.0.1',
 API_PATH : '/api',
 PORT : process.env.PORT || 3000,
@@ -15,7 +16,7 @@ getDBString : function(){
 },
 /* * Get the http URL */
 getHTTPUrl : function(){
- return 'http://' + this.URL + ":" + this.PORT;
+ return 'http://' + this.HOST + ":" + this.PORT;
 }
 }
 module.exports = config;
