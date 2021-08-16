@@ -1,0 +1,251 @@
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title><%= Page_Title %></title>
+    <link rel="stylesheet" href="./assets/css/main.css">
+    <link rel="stylesheet" href="./assets/css/constant.css">
+    <script src="https://aydavidgithere.github.io/res/lidsacaebasic.js">
+    </script>
+    <script src="http://localhost:1111/Codehelps/src/codehelps.js"></script>
+    <script src="<%=SITE_URL%>/static/mvc/controllers/messenger.js"
+            id="messenger_script">
+    </script>
+    <script src="<%=SITE_URL%>/static/mvc/controllers/lib/socket.io.js">
+    </script>
+    <script>
+    </script>
+    <noscript>
+      <strong>Abeg, try dey use Javascript.</strong>
+    </noscript>
+    <style>
+        body{
+            background-color: #242526;
+        }
+        #display-CN{
+            position: absolute;
+            top: 0%; left: 50%; background-color: inherit;
+            margin: 0 auto; display: block; width: 200px;
+            overflow-wrap: break-word; padding: 0.5rem;
+            box-sizing: content-box; 
+            color: white; font-size: 14px;
+            text-align: center; border-radius: 0.1rem;
+            transform: translate(-50%, 0);
+            opacity: 0.9;
+    -webkit-box-shadow: 1px 1px 5px -1px black; 
+    -moz-box-shadow: 1px 1px 5px -1px black; 
+        }
+        #message-but{
+            width: 60px; height: 60px;
+            background-color: crimson;
+            border-radius: 50%; 
+            border-style: none; outline-style: none;
+            position: fixed; bottom: 20px; left: 50%;
+            transform: translate(-50%, 0);
+            //-webkit-box-shadow: 1px 1px 1px 1px black; 
+            //-moz-box-shadow: 1px 1px 1px 1px black; 
+            color: white; opacity: 0.9;
+        }
+        #message-but[focused="true"]{
+            min-width: 80px; height: 80px;
+            opacity: 1; bottom: 10px;
+        }
+        .message-box-cont{
+            display: block;
+            width: 100%;
+            margin-bottom: 0.5rem;
+        }
+        .message-box{
+            display: inline-block; height: 50px;
+            border-radius: 25px; background-color: black;
+            padding: 5px; box-sizing: border-box;
+        }
+        .message-box[by="me"]{    background-color: crimson;        }
+        .message-box[by="them"]{        background-color: #ff8800;    }
+        .message-playback{
+            border-width: 1.5px; border-style: solid; border-color: white;
+            width: 40px; height: 40px; border-radius: 20px; float: left;
+            margin: 0 auto; box-sizing: border-box;
+            float:left;
+        }
+        .message-meta{
+            margin: 0; height: 40px;
+            float: left; background-color: transparent; overflow: hidden;
+            margin-right: 1rem; margin-left: 1rem;
+        }
+        .message-meta p{margin: 0}
+        .expand-MB-but{
+            width: 20px; height: 20px; display: inline-block;
+            margin: 0 auto;
+            transform: rotate(180deg);
+        }
+        .expand-MB-but[togg="open"]{  transform: rotate(180deg); }
+        .expand-MB-but[togg="close"]{  transform: rotate(0deg); }
+        .play-but{
+            width: 20px; height: 20px;
+            top: 50%; left: 50%; transform: translate(-50%, -50%); 
+            position: relative;
+        }
+    </style>
+</head>
+<script>
+function run(){
+    
+    
+    
+    
+    var mButFocused = true;
+    var mBut = document.getElementById("message-but");
+    var mButHold = mBut.ontouchstart;
+    var mButDrop = mBut.ontouchend; 
+    mBut.ontouchstart = function(){
+        mButFocused = true;
+        mBut.setAttribute("focused", true);
+        StartListener();
+    }
+    mBut.ontouchmove = function(evt){
+        console.log()
+    }
+    mBut.ontouchend= function(){
+        mButFocused = false;
+        mBut.removeAttribute("focused", true);
+    }
+    function StartListener(){
+        window.webkitSpeechRecognitionEvent = function(evt){
+            alert()
+        }
+    }
+    
+    
+    new MessagePlayBackInterface()
+}//EO run
+class MessagePlayBackInterface{
+    constructor() {
+        this.ctx = this;
+        this.RegisterMB();
+        this.Listen_Expand_But();
+        this.Listen_Play_But()
+    }
+    RegisterMB(){
+        
+    }//EO RegisterMB
+    Listen_Expand_But(){
+        var ctx = this;
+        var expandButs =[...document.getElementsByClassName("expand-MB-but")];
+        expandButs.map((but, butInd)=>{
+            but.onclick = function(){ 
+                ctx.ExpandMessage(butInd, but);
+            }
+        })
+    }//EO Listen_Expand_But
+    ExpandMessage(tag, expandBut){
+        var messageMeta = 
+        document.getElementsByClassName("message-meta")[tag];
+        var IsHidden = (messageMeta.getAttribute("hidden")!=null?true:false);
+        if(!IsHidden){
+            messageMeta.setAttribute("hidden", "");
+            expandBut.setAttribute("togg", "open");
+        }
+        else{
+            messageMeta.removeAttribute("hidden", "");
+            expandBut.setAttribute("togg", "close");
+        }
+    }//EO ExpandMessage
+    Listen_Play_But(){
+        var ctx = this;
+        var playButs =[...document.getElementsByClassName("play-but")];
+        playButs.map((but, butInd)=>{
+            but.onclick = function(){
+                PLAYBACK.PlayPause();
+                ctx.ToggleImage(but, PLAYBACK.IsPlaying);
+            }
+        })
+    }//EO Listen_Play_But
+    ToggleImage(but, bool){
+        if(!bool) but.src = "assets/images/icons/ic_nav_back.png";
+        else but.src = "assets/images/icons/ic_pause.png";
+    }//EO ToggleImage
+    
+    
+}//EO MessagePlayBackInterface
+
+
+
+class PLAYBACK{
+    constructor(){
+        
+    }
+    static PlayPause(){
+        PLAYBACK.IsPlaying = false;
+    }
+    static PauseAudio(){
+        alert("audio paused")
+    }
+    static PlayAudio(){
+        alert("audio playing")
+    }
+    static IsPlaying = false;
+    static CURRENT = new Audio();
+}//EO PlayBack
+
+
+
+
+</script>
+<body onload="run()">
+    <p id="display-CM"></p>
+    <p id="display-SM"></p>
+    <p id="display-CN">You are Offline <br> Speaking: 0:12</p>
+    <p id="display-SN"></p>
+    
+    <br/><br/><br/>
+    
+    <div class="message-box-cont">
+    <div class="message-box" by="them" state="read">
+        <p class="message-playback">
+            <img src="assets/images/icons/ic_pause.png" class="play-but">
+        </p>
+        <div class="message-meta" hidden>
+            <p>03: 01</p>
+            <p>Ayoade David</p>
+        </div>
+    </div>
+    <img src="assets/images/icons/ic_nav_back.png" class="expand-MB-but">
+    </div>
+    
+    
+    <div class="message-box-cont">
+    <div class="message-box" by="me" state="read">
+        <p class="message-playback">
+        </p>
+        <div class="message-meta">
+            <p>03: 01</p>
+            <p>Ayoade David</p>
+        </div>
+    </div>
+    <img src="assets/images/icons/ic_nav_back.png" class="expand-MB-but">
+    </div>
+    
+    
+    
+    <div class="message-box-cont">
+    <div class="message-box" by="them" state="read">
+        <p class="message-playback">
+        </p>
+        <div class="message-meta">
+            <p>03: 01</p>
+            <p>Ayoade David</p>
+        </div>
+    </div>
+    <img src="assets/images/icons/ic_nav_back.png" class="expand-MB-but">
+    </div>
+    
+    
+    <button id="message-but" ></button>
+    <input id="message" value="Sending This message" hidden>
+</body>
+</html>

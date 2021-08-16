@@ -53,7 +53,7 @@ example_socketcom_page: function(app){
 },
 example_socketcom_control: function(app){
     var router = express.Router();
-    router.route('/api/socketcom').post(mainController.socketcom);
+    router.route('/api/socketcom').get(mainController.socketcom);
     return router;
 }
 

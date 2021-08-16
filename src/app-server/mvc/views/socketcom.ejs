@@ -12,23 +12,190 @@
     <script src="https://aydavidgithere.github.io/res/lidsacaebasic.js">
     </script>
     <script src="http://localhost:1111/Codehelps/src/codehelps.js"></script>
-    <script alt="../../public/mvc/controllers/messenger.js" 
-            alt="/mvc/controllers/messenger.js"
-            src="<%=SITE_URL%>/static/mvc/controllers/messenger.js"
-            id="messenger_script"
-        
-    ></script>
+    <script src="<%=SITE_URL%>/static/mvc/controllers/messenger.js"
+            id="messenger_script">
+    </script>
+    <script src="<%=SITE_URL%>/static/mvc/controllers/lib/socket.io.js">
+    </script>
     <script>
-        document.write(document.getElementById("messenger_script").src)
+    try{
+    var socket = io("http://localhost:3000");
+    socket.on("message-from-server-to-client", function(msg) {
+        document.getElementById('message').innerHTML = msg;
+    });
+    socket.emit('message-from-client-to-server', 'Hello World!');
+    }catch(e){alert("socket error;")}
+ 
+var APP = {};
+APP.MID = 
+{
+     CLIENT_MESSAGE: 1, SERVER_MESSAGE: -1,
+     CLIENT_NOTIFICATION: 2, SERVER_NOTIFICATION: -2, 
+}
+APP.NETWORK_ACTIVE = false;
+APP.PENDING_STACK = [];
+var websocket;
+var serverUrl = "ws://localhost:3000/api/socketcom";
+
+
+
+function displayMessage(ID, message) {
+  switch (ID){
+     case APP.MID.CLIENT_MESSAGE: 
+     document.getElementById("display-CM").innerText += "\n"+message + "\n";
+     break;
+     case APP.MID.SERVER_MESSAGE: 
+     document.getElementById("display-SM").innerText += "\n"+message + "\n";
+     break;
+     case APP.MID.CLIENT_NOTIFICATION: 
+     document.getElementById("display-CN").innerText += "\n"+message + "\n";
+     break;
+     case APP.MID.SERVER_NOTIFICATION: 
+     document.getElementById("display-SN").innerText += "\n"+message + "\n";
+     break;
+  }
+}
+
+
+
+function initWebSocket() { 
+// Make sure the browser supports WebSockets
+if (!window.WebSocket) {
+     displayMessage(2,"Your browser does not support WebSockets");
+     return;
+}
+try{
+ websocket = new window.WebSocket(serverUrl); 
+ websocket.addEventListener("open", function() {
+     displayMessage(2,"WebSocket connection opened");
+     APP.NETWORK_ACTIVE = true;
+ });  
+ websocket.addEventListener("close", function() {
+     displayMessage(2,"WebSocket connection closed");
+     APP.NETWORK_ACTIVE = false;
+ });  
+ websocket.addEventListener("error", function() {
+     displayMessage(2,"WebSocket connection error");
+     APP.NETWORK_ACTIVE = false;
+ });
+ websocket.addEventListener("message", function(response) {
+     var message = JSON.parse(response.data)
+     displayMessage(message.typeId, message.text + "");
+ });
+}catch(e){alert(e)}
+}//EO initWebSocket
+
+
+
+
+function sendMessage() { 
+try{
+ var message = document.getElementById("message").value;
+ displayMessage(1, message + "");
+ APP.PENDING_STACK.push({
+    text: message, 
+    timestamp: new Date(),
+    read: false,
+ });    
+ if (websocket.readyState === window.WebSocket.OPEN) {
+    websocket.send(APP.PENDING_STACK);
+ }
+ else {
+    displayMessage(2, "You are Offline Browski !");
+    displayMessage(1, message + "");
+ }
+}catch(e){alert(e)}
+}//EO sendmessage
+ 
+ 
+ 
     </script>
     <noscript>
       <strong>Abeg, try dey use Javascript.</strong>
     </noscript>
+    <style>
+        body{
+            background-color: #ffffff;
+        }
+        #display-CN{
+            position: absolute;
+            top: 0%; left: 50%; background-color: #ff8800;
+            margin: 0 auto; display: block; width: 200px;
+            overflow-wrap: break-word; padding: 0.5rem;
+            box-sizing: content-box; 
+            color: #222222; font-size: 14px;
+            text-align: center; border-radius: 0.5rem;
+            transform: translate(-50%, 0);
+            opacity: 0.7;
+        }
+        #message-but{
+            width: 60px; height: 60px;
+            background-color: #222222;
+            border-radius: 50%; 
+            border-style: none; outline-style: none;
+            position: absolute; bottom: 20px; left: 50%;
+            transform: translate(-50%, 0);
+            //-webkit-box-shadow: 1px 1px 1px 1px black; 
+            //-moz-box-shadow: 1px 1px 1px 1px black; 
+            color: white; opacity: 0.9;
+        }
+        #message-but[focused="true"]{
+            width: 70px; height: 70px;
+            opacity: 1; bottom: 15px;
+        }
+        #message-box{
+            width: 120px; height: 40px;
+            border-radius: 0.3rem;
+            margin: 0 auto; outline-style: none;
+        }
+        #message-box[by="me"]{
+            background-color: #222222;
+        }
+        #message-box[by="them"]{
+            background-color: #aa2255;
+        }
+        
+    </style>
 </head>
-
-
-<body >
-    <div><%= Page_Title %></div>
-    <button id="sendmessage-but">Send Message But</button>
-    <p>  </p>
+<script>
+function run(){
+    
+    
+    
+    
+    var mButFocused = true;
+    var mBut = document.getElementById("message-but")
+    mBut.ontouchstart = function(){
+        mButFocused = true;
+        mBut.setAttribute("focused", true);
+        StartListener();
+    }
+    mBut.ontouchend = function(){
+        mButFocused = false;
+        mBut.removeAttribute("focused", true)
+    }
+    function StartListener(){
+        window.webkitSpeechT
+    }
+    
+    
+    
+}
+</script>
+<body onload="run()">
+    <p id="display-CM"></p>
+    <p id="display-SM"></p>
+    <p id="display-CN">Client Notification <br> Speaking: 0:12</p>
+    <p id="display-SN"></p>
+    
+    <p id="message-box" by="them" state="read"></p>
+    <p id="message-box" by="them" state="read"></p>
+    <p id="message-box" by="me" state="read"></p>
+    <p id="message-box" by="them" state="read"></p>
+    
+    
+    
+    <button id="message-but" ></button>
+    <input id="message" value="Sending This message" hidden>
 </body>
+</html>

@@ -1,7 +1,8 @@
 var main = require('../models/main');
 var multer = require("multer")
 var path = require('path');
-//Controller for main
+var config = require('../../configs/config');
+//Controller for mainp
 var mainController = {
  //Create a main
  test: function(req, res){
@@ -38,9 +39,33 @@ var mainController = {
     
  },
  socketcom: function(req, res, next){
-     res.end("Seen")
- }
- 
+     console.log("at socketcom api: ")
+     console.log(res.body);
+     /*
+     //Cannot use this socket.io because on node version
+     const io = require('socket.io')(config.server);
+     io.on('connection', (socket) => {
+         console.log("Client connected!");
+         socket.on('message-from-client-to-server', (msg) => {
+             console.log(msg);
+         })
+         socket.emit('message-from-server-to-client', 'Hello World!');
+     });*/
+     
+    var WebSocketServer = require('ws').Server
+    var wss = new WebSocketServer({ server: config.server }); 
+    wss.on('connection', function connection(ws) {
+      ws.on('message', function incoming(message) {
+           console.log('ws message recieved: %s', '"'+ message +'"');
+           ws.send("Well, we sending this back at you: "+message)
+      });
+      ws.send('I am glad to say we have successsfully connected')
+      console.log('ws connected');
+    });
+    console.log("ws server at: ")
+    res.end("at socketcom is api");
+    
+ },
  
  
  
