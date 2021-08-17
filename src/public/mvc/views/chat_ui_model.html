@@ -24,6 +24,7 @@
     </noscript>
     <style>
         body{
+            font-family: Courier;
             background-color: #242526;
         }
         #display-CN{
@@ -39,7 +40,7 @@
     -webkit-box-shadow: 1px 1px 5px -1px black; 
     -moz-box-shadow: 1px 1px 5px -1px black; 
         }
-        #message-but{
+        #startrecord-but{
             width: 60px; height: 60px;
             background-color: crimson;
             border-radius: 50%; 
@@ -50,14 +51,14 @@
             //-moz-box-shadow: 1px 1px 1px 1px black; 
             color: white; opacity: 0.9;
         }
-        #message-but[focused="true"]{
+        #startrecord-but[focused="true"]{
             min-width: 80px; height: 80px;
             opacity: 1; bottom: 10px;
         }
         .message-box-cont{
             display: block;
             width: 100%;
-            margin-bottom: 0.5rem;
+            margin-bottom: 0.5rem; font-weight: bold;
         }
         .message-box{
             display: inline-block; height: 50px;
@@ -65,7 +66,7 @@
             padding: 5px; box-sizing: border-box;
         }
         .message-box[by="me"]{    background-color: crimson;        }
-        .message-box[by="them"]{        background-color: #ff8800;    }
+        .message-box[by="them"]{        background-color: hsl(20, 100%, 60%);    }
         .message-playback{
             border-width: 1.5px; border-style: solid; border-color: white;
             width: 40px; height: 40px; border-radius: 20px; float: left;
@@ -93,46 +94,107 @@
     </style>
 </head>
 <script>
+
+var mTemp;
+var mHtml;
+var PCI;
+var messagesContainer;
 function run(){
-    
-    
-    
-    
-    var mButFocused = true;
-    var mBut = document.getElementById("message-but");
-    var mButHold = mBut.ontouchstart;
-    var mButDrop = mBut.ontouchend; 
-    mBut.ontouchstart = function(){
-        mButFocused = true;
-        mBut.setAttribute("focused", true);
-        StartListener();
-    }
-    mBut.ontouchmove = function(evt){
-        console.log()
-    }
-    mBut.ontouchend= function(){
-        mButFocused = false;
-        mBut.removeAttribute("focused", true);
-    }
-    function StartListener(){
-        window.webkitSpeechRecognitionEvent = function(evt){
-            alert()
-        }
-    }
-    
-    
-    new MessagePlayBackInterface()
+    messagesContainer=document.getElementsByTagName("messages-container")[0];
+    mTemp =new Templater();
+    new RecordControllerInterface()
+    PCI = new PlayBackControllerInterface();
 }//EO run
-class MessagePlayBackInterface{
+
+
+
+class RecordControllerInterface{
     constructor() {
         this.ctx = this;
-        this.RegisterMB();
+        this.record = new Record();
+        this.Listen_RecordBut();
+    }
+    Listen_RecordBut(){
+        var mBut = document.getElementById("startrecord-but");
+        var mButHold = mBut.ontouchstart;
+        var mButDrop = mBut.ontouchend;
+        var ctx = this;
+        if(this.record.support) mBut.disabled=false;
+        else mBut.disabled=true;
+        
+        if(!mBut.disabled){ 
+        mBut.ontouchstart = function(){
+            mBut.setAttribute("focused", true);
+            ctx.record.Start();
+        }
+        mBut.ontouchmove = function(evt){
+            console.log()
+        }
+        mBut.ontouchend= function(){
+            mBut.removeAttribute("focused", true);
+            ctx.record.Stop();
+        }
+        }//EO if
+    }//EO Listen_RecordBut
+}//EO MediaRecordInterface
+
+
+class Record{
+    constructor(){
+        this.support = true;
+        this.chunks = []
+        this.setup();
+    }
+    setup(){
+        var ctx = this;
+        if(navigator.mediaDevices&&navigator.mediaDevices.getUserMedia){
+        this.support = true;
+        window.navigator.mediaDevices.getUserMedia({audio: true})
+        .then(function (stream){ 
+            ctx.recorder = new MediaRecorder(stream);
+            ctx.recorder.ondataavailable=function(e){ctx.RecordingReady(e);}
+        });
+        }
+        else{
+            this.support = false;
+            console.log("Your devices does not support recording");
+        }//EO else
+    }
+    Start(){
+        this.chunks = [];
+        this.recorder.start();
+    }
+    Stop(){
+        this.recorder.stop(); 
+    }
+    RecordingReady(e){ 
+        this.chunks.push(e.data);
+        var blob = 
+        new Blob(this.chunks, { 'type' : 'audio/ogg; codecs=opus'});
+        const audioSrc = URL.createObjectURL(blob); 
+        this.AudioResult = {data: blob, src: audioSrc};
+        alert("Audio available now");
+        //var audio = new Audio();    audio.src = audioSrc;    audio.play();
+        mHtml = mTemp.CreateHtmlFrom("mTemp", {
+            by: "me", state: "them", Time: "03: 01", SenderName: "Ayoade", 
+            AudioSrc: audioSrc,
+        });
+        mTemp.AppendTo(messagesContainer, mHtml);
+        PCI.Refresh();
+    }
+}//EO Record
+
+
+class PlayBackControllerInterface{
+    constructor() {
+        this.ctx = this;
         this.Listen_Expand_But();
         this.Listen_Play_But()
     }
-    RegisterMB(){
-        
-    }//EO RegisterMB
+    Refresh(){
+        this.Listen_Expand_But();
+        this.Listen_Play_But();
+    }
     Listen_Expand_But(){
         var ctx = this;
         var expandButs =[...document.getElementsByClassName("expand-MB-but")];
@@ -160,13 +222,15 @@ class MessagePlayBackInterface{
         var playButs =[...document.getElementsByClassName("play-but")];
         playButs.map((but, butInd)=>{
             but.onclick = function(){
-                PLAYBACK.PlayPause();
+                var audio = 
+                document.getElementsByClassName("message-audio")[butInd];
+                PLAYBACK.PlayPause(audio);
                 ctx.ToggleImage(but, PLAYBACK.IsPlaying);
             }
         })
     }//EO Listen_Play_But
     ToggleImage(but, bool){
-        if(!bool) but.src = "assets/images/icons/ic_nav_back.png";
+        if(!bool) but.src = "assets/images/icons/ic_stop.png";
         else but.src = "assets/images/icons/ic_pause.png";
     }//EO ToggleImage
     
@@ -179,18 +243,47 @@ class PLAYBACK{
     constructor(){
         
     }
-    static PlayPause(){
+    static PlayPause(audio){
+        PLAYBACK.Audio = audio;
         PLAYBACK.IsPlaying = false;
+        PLAYBACK.PlayAudio()
     }
     static PauseAudio(){
         alert("audio paused")
     }
     static PlayAudio(){
+        PLAYBACK.Audio.play();
         alert("audio playing")
     }
     static IsPlaying = false;
     static CURRENT = new Audio();
+    static Audio;
 }//EO PlayBack
+
+
+
+class Templater{
+    constructor(){
+        this.templates = {};
+        this.CreateTemplate();
+    }
+    CreateTemplate(){
+        var temps = [...document.getElementsByTagName("ch-template")];
+        temps.map((temp)=>{
+        this.templates[temp.getAttribute("name")] = {HTML: temp.innerHTML};
+        });
+    }
+    CreateHtmlFrom(templateName, dataObject){
+        var HTML = this.templates[templateName].HTML;
+        for(var data in dataObject){
+            HTML = HTML.replace("{{"+data+"}}", dataObject[data]);
+        }
+        return HTML;
+    }
+    AppendTo(element, HTML){
+        element.innerHTML+= HTML
+    }
+}//EI Templater
 
 
 
@@ -203,21 +296,25 @@ class PLAYBACK{
     <p id="display-SN"></p>
     
     <br/><br/><br/>
-    
+
+<messages-container>
+    <ch-template name="mTemp" hidden>
     <div class="message-box-cont">
-    <div class="message-box" by="them" state="read">
+    <div class="message-box" by="{{by}}" state="{{state}}">
         <p class="message-playback">
             <img src="assets/images/icons/ic_pause.png" class="play-but">
+            <audio class="message-audio" src="{{AudioSrc}}"></audio>
         </p>
         <div class="message-meta" hidden>
-            <p>03: 01</p>
-            <p>Ayoade David</p>
+            <p>{{Time}}</p>
+            <p>{{SenderName}}</p>
         </div>
     </div>
     <img src="assets/images/icons/ic_nav_back.png" class="expand-MB-but">
     </div>
+    </ch-template>
     
-    
+    <!--
     <div class="message-box-cont">
     <div class="message-box" by="me" state="read">
         <p class="message-playback">
@@ -243,9 +340,14 @@ class PLAYBACK{
     </div>
     <img src="assets/images/icons/ic_nav_back.png" class="expand-MB-but">
     </div>
+    -->
+</messages-container>
     
     
-    <button id="message-but" ></button>
+    
+    
+    
+    <button id="startrecord-but" ></button>
     <input id="message" value="Sending This message" hidden>
 </body>
 </html>
