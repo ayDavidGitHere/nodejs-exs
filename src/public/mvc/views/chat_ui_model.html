@@ -99,12 +99,94 @@ var mTemp;
 var mHtml;
 var PCI;
 var messagesContainer;
+var websocket;
+var serverUrl = "ws://localhost:3000/api/socketcom";
 function run(){
     messagesContainer=document.getElementsByTagName("messages-container")[0];
     mTemp =new Templater();
     new RecordControllerInterface()
     PCI = new PlayBackControllerInterface();
+    APP.InitWebSocket();
 }//EO run
+
+
+
+
+
+
+
+
+
+class APP{
+static MID = {
+     CLIENT_MESSAGE: 1, SERVER_MESSAGE: -1,
+     CLIENT_NOTIFICATION: 2, SERVER_NOTIFICATION: -2,
+}
+static NETWORK_ACTIVE = false;
+static PENDING_STACK = [];
+static function displayMessage(ID, message) {
+  switch (ID){
+     case APP.MID.CLIENT_MESSAGE: 
+     document.getElementById("display-CM").innerText += "\n"+message + "\n";
+     break;
+     case APP.MID.SERVER_MESSAGE: 
+     document.getElementById("display-SM").innerText += "\n"+message + "\n";
+     break;
+     case APP.MID.CLIENT_NOTIFICATION: 
+     document.getElementById("display-CN").innerText += "\n"+message + "\n";
+     break;
+     case APP.MID.SERVER_NOTIFICATION: 
+     document.getElementById("display-SN").innerText += "\n"+message + "\n";
+     break;
+  }
+}//EO displayMessage
+static function InitWebSocket() { 
+// Make sure the browser supports WebSockets
+if (!window.WebSocket) {
+     displayMessage(-2,"Your browser does not support WebSockets");
+     return;
+}
+try{
+ websocket = new window.WebSocket(serverUrl); 
+ websocket.addEventListener("open", function() {
+     displayMessage(-2,"WebSocket connection opened");
+     APP.NETWORK_ACTIVE = true;
+     let dum ,JAPP.PENDING_STACK.map((message, messageInd)=>{
+         APP.SendSocketMessage(message);
+     })
+ });  
+ websocket.addEventListener("close", function() {
+     displayMessage(-2,"WebSocket connection closed");
+     APP.NETWORK_ACTIVE = false;
+ });  
+ websocket.addEventListener("error", function() {
+     displayMessage(-2,"WebSocket connection error");
+     APP.NETWORK_ACTIVE = false;
+ });
+ websocket.addEventListener("message", function(response) {
+     var message = JSON.parse(response.data)
+     displayMessage(message.typeId, message.text + "");
+ });
+}catch(e){alert(e)}
+}//EO InitWebSocket
+
+static function SendSocketMessage(message) { 
+try{
+ if(websocket.readyState === window.WebSocket.OPEN) {
+    websocket.send(message);
+ }
+ else{
+    displayMessage(-2, "You are Offline Browski !");
+    APP.PENDING_STACK.push(message);
+ }
+}catch(e){alert(e)}
+}//EO SendSocketMessage
+ 
+ 
+}//EO APP
+ 
+ 
+
 
 
 
@@ -150,7 +232,7 @@ class Record{
         if(navigator.mediaDevices&&navigator.mediaDevices.getUserMedia){
         this.support = true;
         window.navigator.mediaDevices.getUserMedia({audio: true})
-        .then(function (stream){ 
+        .then(function (stream){
             ctx.recorder = new MediaRecorder(stream);
             ctx.recorder.ondataavailable=function(e){ctx.RecordingReady(e);}
         });
@@ -173,8 +255,10 @@ class Record{
         new Blob(this.chunks, { 'type' : 'audio/ogg; codecs=opus'});
         const audioSrc = URL.createObjectURL(blob); 
         this.AudioResult = {data: blob, src: audioSrc};
+        this.MessageResult = {AudioResult: this.AudioResult}
         alert("Audio available now");
         //var audio = new Audio();    audio.src = audioSrc;    audio.play();
+        APP.SendSocketMessage(this.MessageResult);
         mHtml = mTemp.CreateHtmlFrom("mTemp", {
             by: "me", state: "them", Time: "03: 01", SenderName: "Ayoade", 
             AudioSrc: audioSrc,
@@ -284,6 +368,10 @@ class Templater{
         element.innerHTML+= HTML
     }
 }//EI Templater
+
+
+
+
 
 
 
