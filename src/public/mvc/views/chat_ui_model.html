@@ -27,7 +27,7 @@
             font-family: Courier;
             background-color: #242526;
         }
-        #display-CN{
+        #notification-box{
             position: absolute;
             top: 0%; left: 50%; background-color: inherit;
             margin: 0 auto; display: block; width: 200px;
@@ -37,8 +37,8 @@
             text-align: center; border-radius: 0.1rem;
             transform: translate(-50%, 0);
             opacity: 0.9;
-    -webkit-box-shadow: 1px 1px 5px -1px black; 
-    -moz-box-shadow: 1px 1px 5px -1px black; 
+            -webkit-box-shadow: 1px 1px 5px -1px black; 
+            -moz-box-shadow: 1px 1px 5px -1px black; 
         }
         #startrecord-but{
             width: 60px; height: 60px;
@@ -114,74 +114,86 @@ function run(){
 
 
 
-
+class USER{
+     static name = "Ayoade";
+}
 
 
 class APP{
 static MID = {
-     CLIENT_MESSAGE: 1, SERVER_MESSAGE: -1,
-     CLIENT_NOTIFICATION: 2, SERVER_NOTIFICATION: -2,
+     SERVER_MESSAGE: -1,
+     CLIENT_NOTIFICATION: 2, 
+     SERVER_NOTIFICATION: -2,
 }
 static NETWORK_ACTIVE = false;
 static PENDING_STACK = [];
-static function displayMessage(ID, message) {
+static DisplayMessage(ID, message){
   switch (ID){
-     case APP.MID.CLIENT_MESSAGE: 
-     document.getElementById("display-CM").innerText += "\n"+message + "\n";
-     break;
      case APP.MID.SERVER_MESSAGE: 
-     document.getElementById("display-SM").innerText += "\n"+message + "\n";
+     console.log("Server Message: ");
+     console.log(message);
+        /*
+        mHtml = mTemp.CreateHtmlFrom("mTemp", {
+            by: "them", state: "seen",
+            Time: this.MessageResult.timeStamp,
+            SenderName: this.MessageResult.SenderName, 
+            AudioSrc: this.MessageResult.AudioResult.src, 
+        });
+        mTemp.AppendTo(messagesContainer, mHtml);
+        PCI.Refresh();
+        */
      break;
      case APP.MID.CLIENT_NOTIFICATION: 
-     document.getElementById("display-CN").innerText += "\n"+message + "\n";
+     document.getElementById("display-CN").innerText = "\n"+message + "\n";
      break;
      case APP.MID.SERVER_NOTIFICATION: 
-     document.getElementById("display-SN").innerText += "\n"+message + "\n";
+     document.getElementById("display-SN").innerText = "\n"+message + "\n";
      break;
   }
-}//EO displayMessage
-static function InitWebSocket() { 
+}//EO APP.DisplayMessage
+static InitWebSocket() { 
 // Make sure the browser supports WebSockets
 if (!window.WebSocket) {
-     displayMessage(-2,"Your browser does not support WebSockets");
+     APP.DisplayMessage(2,"Your browser does not support WebSockets");
      return;
 }
 try{
  websocket = new window.WebSocket(serverUrl); 
  websocket.addEventListener("open", function() {
-     displayMessage(-2,"WebSocket connection opened");
+     APP.DisplayMessage(-2,"WebSocket connection opened");
      APP.NETWORK_ACTIVE = true;
-     let dum ,JAPP.PENDING_STACK.map((message, messageInd)=>{
+     let sendStack = APP.PENDING_STACK;
+     APP.PENDING_STACK = [];
+     sendStack.map((message, messageInd)=>{
          APP.SendSocketMessage(message);
      })
  });  
  websocket.addEventListener("close", function() {
-     displayMessage(-2,"WebSocket connection closed");
+     APP.DisplayMessage(-2,"WebSocket connection closed");
      APP.NETWORK_ACTIVE = false;
  });  
  websocket.addEventListener("error", function() {
-     displayMessage(-2,"WebSocket connection error");
+     APP.DisplayMessage(-2,"WebSocket connection error");
      APP.NETWORK_ACTIVE = false;
  });
  websocket.addEventListener("message", function(response) {
      var message = JSON.parse(response.data)
-     displayMessage(message.typeId, message.text + "");
+     APP.DisplayMessage(message.mid, message); 
  });
 }catch(e){alert(e)}
 }//EO InitWebSocket
 
-static function SendSocketMessage(message) { 
+static SendSocketMessage(message) { 
 try{
- if(websocket.readyState === window.WebSocket.OPEN) {
+ if(websocket.readyState === window.WebSocket.OPEN && APP.NETWORK_ACTIVE) {
     websocket.send(message);
  }
  else{
-    displayMessage(-2, "You are Offline Browski !");
+    APP.DisplayMessage(-2, "You are Offline Browski !");
     APP.PENDING_STACK.push(message);
  }
 }catch(e){alert(e)}
 }//EO SendSocketMessage
- 
  
 }//EO APP
  
@@ -254,14 +266,19 @@ class Record{
         var blob = 
         new Blob(this.chunks, { 'type' : 'audio/ogg; codecs=opus'});
         const audioSrc = URL.createObjectURL(blob); 
-        this.AudioResult = {data: blob, src: audioSrc};
-        this.MessageResult = {AudioResult: this.AudioResult}
+        let AudioResult = {data: blob, src: audioSrc};
+        let timeStamp = new Date();
+        this.MessageResult = 
+        {AudioResult: AudioResult,
+        timeStamp: timeStamp,
+        SenderName: USER.name}
         alert("Audio available now");
-        //var audio = new Audio();    audio.src = audioSrc;    audio.play();
         APP.SendSocketMessage(this.MessageResult);
         mHtml = mTemp.CreateHtmlFrom("mTemp", {
-            by: "me", state: "them", Time: "03: 01", SenderName: "Ayoade", 
-            AudioSrc: audioSrc,
+            by: "me", state: "seen",
+            Time: this.MessageResult.timeStamp,
+            SenderName: this.MessageResult.SenderName, 
+            AudioSrc: this.MessageResult.AudioResult.src, 
         });
         mTemp.AppendTo(messagesContainer, mHtml);
         PCI.Refresh();
@@ -380,8 +397,10 @@ class Templater{
 <body onload="run()">
     <p id="display-CM"></p>
     <p id="display-SM"></p>
-    <p id="display-CN">You are Offline <br> Speaking: 0:12</p>
-    <p id="display-SN"></p>
+    <div id="notification-box">
+        <p id="display-CN">...</p>
+        <p id="display-SN">...</p>
+    </div>
     
     <br/><br/><br/>
 
@@ -404,7 +423,7 @@ class Templater{
     
     <!--
     <div class="message-box-cont">
-    <div class="message-box" by="me" state="read">
+    <div class="message-box" by="me" state="seen">
         <p class="message-playback">
         </p>
         <div class="message-meta">
@@ -418,7 +437,7 @@ class Templater{
     
     
     <div class="message-box-cont">
-    <div class="message-box" by="them" state="read">
+    <div class="message-box" by="them" state="seen">
         <p class="message-playback">
         </p>
         <div class="message-meta">
