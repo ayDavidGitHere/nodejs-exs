@@ -56,10 +56,15 @@ var mainController = {
     var wss = new WebSocketServer({ server: config.server }); 
     wss.on('connection', function connection(ws) {
       ws.on('message', function incoming(message) {
-           console.log('ws message recieved: %s', '"'+ message +'"');
-           ws.send("Well, we sending this back at you: "+message)
+           var returnMessage = 
+           JSON.stringify({mid:-2, text: "Your message Recieved at server"});
+           console.log(returnMessage);
+           ws.send(returnMessage)
       });
-      ws.send('I am glad to say we have successsfully connected')
+      ws.send(JSON.stringify({
+        mid:-2,
+        text:'I am glad to say we have successsfully connected'
+      }))
       console.log('ws connected');
     });
     console.log("ws server at: ")

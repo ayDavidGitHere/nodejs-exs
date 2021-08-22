@@ -18,14 +18,19 @@
     <script src="<%=SITE_URL%>/static/mvc/controllers/lib/socket.io.js">
     </script>
     <script>
-    try{
+try{
     var socket = io("http://localhost:3000");
     socket.on("message-from-server-to-client", function(msg) {
         document.getElementById('message').innerHTML = msg;
     });
     socket.emit('message-from-client-to-server', 'Hello World!');
-    }catch(e){alert("socket error;")}
- 
+}catch(e){alert("socket error;")}
+
+
+
+
+
+
 var APP = {};
 APP.MID = 
 {
@@ -56,9 +61,7 @@ function displayMessage(ID, message) {
   }
 }
 
-
-
-function initWebSocket() { 
+function InitWebSocket() { 
 // Make sure the browser supports WebSockets
 if (!window.WebSocket) {
      displayMessage(2,"Your browser does not support WebSockets");
@@ -83,7 +86,7 @@ try{
      displayMessage(message.typeId, message.text + "");
  });
 }catch(e){alert(e)}
-}//EO initWebSocket
+}//EO InitWebSocket
 
 
 
@@ -106,6 +109,12 @@ try{
  }
 }catch(e){alert(e)}
 }//EO sendmessage
+ 
+ 
+ 
+ 
+ 
+ 
  
  
  

@@ -177,8 +177,10 @@ try{
      APP.NETWORK_ACTIVE = false;
  });
  websocket.addEventListener("message", function(response) {
-     var message = JSON.parse(response.data)
-     APP.DisplayMessage(message.mid, message); 
+     //message.action = update dom from database; 
+     var message = JSON.parse(response.data);
+     console.log(message)
+     APP.DisplayMessage(message.mid, message.text); 
  });
 }catch(e){alert(e)}
 }//EO InitWebSocket
@@ -271,14 +273,17 @@ class Record{
         this.MessageResult = 
         {AudioResult: AudioResult,
         timeStamp: timeStamp,
-        SenderName: USER.name}
+        SenderName: USER.name,
+        tickStage: 0,
+        }
         alert("Audio available now");
         APP.SendSocketMessage(this.MessageResult);
         mHtml = mTemp.CreateHtmlFrom("mTemp", {
             by: "me", state: "seen",
             Time: this.MessageResult.timeStamp,
             SenderName: this.MessageResult.SenderName, 
-            AudioSrc: this.MessageResult.AudioResult.src, 
+            AudioSrc: this.MessageResult.AudioResult.src,
+            tickStage: this.MessageResult.tickStage,
         });
         mTemp.AppendTo(messagesContainer, mHtml);
         PCI.Refresh();
