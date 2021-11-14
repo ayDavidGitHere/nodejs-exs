@@ -1,13 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, height=device-height, initial-scale=1">
+<link rel="stylesheet" href="./res/css/constant.css">
+<link rel="stylesheet" href="./res/css/header.css">
+<link rel="stylesheet" href="./res/css/homepage.css">
+<script src="http://localhost:1111/eruda/eruda.min.js"></script>
+<script src="http://localhost:1111/eruda/init.js" defer></script>
+<script src="./res/js/views/search.js" type="module"></script>
+<script src="./dist/comp.js" type="module" defer></script>
+</head>
 
-<ul>
-    <li>Site Title is : <%=  Site_Title %>.</li>
-    <li>Page Title is : <%=  Page_Title %>.</li>
-</ul>
+
+
+<body>
+<nav id="header-navbar">
+    <div id="icons-wrapper">
+        <div id="menu-icon"><img src="./res/icons/menu.png"/></div>
+        <div id="sitetitle-icon"><%=  Site_Title  %></div>
+        <div id="search-icon"><img src="./res/icons/search.png"/></div>
+    </div>
+    <input id="search-box" type="search" css-hide>
+</nav>
 <div id="welcome-block">
-    <h1 id="headline-pg">Welcome to <%=  Page_Title %>. </h1>
+    <h1 id="headline-pg">Welcome to <%= Page_Title %>. </h1>
     <p id="headline-base-pg"></p>
+    
+    
+    <input type="text" id="input-field">
+    <button id="submit-but"></button>
+    
+    <div>
+        <p>Categories</p>
+    </div>
     <ul>
-    <li><a href="./example/fileupload"><h3>Go To Upload</h3></a></li>
-    <li><a href="./example/socketcom"><h3>Go To SocketCom</h3></a></li>
+    <% for(var i=0; i<GENRES.length; i++) { %>
+        <li>
+        <a href='./GENRES/<%= GENRES[i].genre %>'><%= GENRES[i].genre %></a>
+        </li>
+    <% } %>
     </ul>
+    
+    <button id="dn-but">Click To Download</button>
+    
+    <p>Trending</p>
+    <ul>
+    <% for(var i=0; i<TRENDINGS.length; i++) { %>
+        <li>
+        <a href='<%= TRENDINGS[i].data.url %>'>
+            <%=TRENDINGS[i].data.name%>
+        </a>
+        </li>
+    <% } %>
+    </ul>
+    <p>New</p>
+    <p>Featured</p>
+    <p>Most picks</p>
+    
+    
+    
 </div>
+</body>
+
+
+</html>

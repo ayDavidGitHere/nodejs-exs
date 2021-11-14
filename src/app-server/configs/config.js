@@ -5,16 +5,26 @@ HOST: '127.0.0.1',
 URL: 'http://127.0.0.1',
 API_PATH : '/api',
 PORT : process.env.PORT || 3000,
-DB : { //MongoDB configuration
- HOST : 'localhost',
- PORT : '27017',
- DATABASE : 'db'
+DB : {
+    mongo: {
+        HOST : 'localhost',
+        PORT : '27017',
+        DATABASE : 'db',
+        getConnectionString : function(){
+        return 'mongodb://'+ this.HOST +':'+ this.PORT +'/'+ this.DATABASE;
+        },
+    },
+    pg: {
+        HOST : 'localhost',
+        PORT : '5432',
+        DATABASE : 'app_db',
+        USER: 'app_user',
+        PASS: 'app_pass',
+        getConnectionString : function(){
+        return "pg://"+this.USER+":"+this.PASS+"@localhost:"+this.PORT+"/"+this.DATABASE;
+        },
+    },
 },
-/* * Get DB Connection String for connecting to MongoDB database  */
-getDBString : function(){
- return 'mongodb://'+ this.DB.HOST +':'+ this.DB.PORT +'/'+ this.DB.DATABASE;
-},
-/* * Get the http URL */
 getHTTPUrl : function(){
  return 'http://' + this.HOST + ":" + this.PORT;
 }

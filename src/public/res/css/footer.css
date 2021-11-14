@@ -1,0 +1,27 @@
+#blogfooter{
+    display: block;
+    width: 100%; height: auto; margin-bottom: 0px;
+    background-color: var(--col-bg-sec);
+    padding: 10px; color: white;
+    box-sizing: border-box;
+    border-top-right-radius: 100px;
+}
+#blogfooter-navbar a{
+    color: white; text-decoration: none;
+    font-size: 12px; font-weight: bold;
+}
+#blogfooter-navbar ul{
+    padding-left: 0px;
+}
+#blogfooter-navbar li{
+    list-style: none; 
+    padding: 0.5rem; padding-left: 1rem; padding-right: 1rem;
+    display: inline;
+    margin-bottom: 0.2rem;
+    border-radius: 30px;
+    border-color: var(--col-bg-ter); border-width: 1px; border-style: solid;
+    font-family: p2F;
+}
+#blogfooter-sitename{
+    font-family: h2F;
+}

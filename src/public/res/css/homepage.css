@@ -1,0 +1,35 @@
+#welcome-container{
+    width: 100%;
+    background-color: var(--col-bg-sec);
+    padding: 10px; box-sizing: border-box;
+    border-bottom-right-radius: 100px;
+}    
+#welcome-main-text{
+    margin-top: 80px; margin-bottom: 0px;
+    font-size: 27px; font-family: h2F; color: white;
+    padding-right: 20px; margin-right: 40%;
+}
+#welcome-note-text{
+    margin-top: 10px; 
+    font-size: 16px; font-family: pF; color: var(--col-bg-ter);
+    padding-right: 10px;  margin-right: 10%;
+}    
+    
+    
+    
+#welcome-header #goto-but{
+    padding: 0.5rem;  padding-left: 1rem; padding-right: 1rem;
+    display: inline-block;
+    margin-top: 1rem; margin-bottom: 0.5rem;
+    color: white;
+    border-radius: 30px;
+    border-color: var(--col-bg-ter); border-width: 1px; border-style: solid;
+    font-family: p2F;
+}   
+    
+    
+    
+    
+#welcome-block{
+    margin-top: 50px;
+}

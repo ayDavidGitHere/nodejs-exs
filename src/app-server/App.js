@@ -1,4 +1,3 @@
-
 //Import Libraries
 var express = require('express');
 //var session = require('express-session');
@@ -6,8 +5,8 @@ var mongoose = require('mongoose');
 var request = require('request');
 var path = require('path');
 var bodyParser = require('body-parser');
+var fs = require('fs');
 //Import custom modules
-var mainRoutes = require('./routes/main');
 var config = require('./configs/config');
 
 //Create a new Express application and Configure it
@@ -23,21 +22,55 @@ app.set('view engine', 'ejs');
 app.set('views', 'src/app-server/mvc/views'); 
 
 
-var PUBLIC_DIR = path.join(__dirname, '/../public')
 //Define static folders 
-app.use( "/static",express.static(PUBLIC_DIR) );
-
+var RES_DIR = path.join(__dirname, '/../public/res');
+var DIST_DIR = path.join(__dirname, '/../../dist') ;
+app.use( "/res", express.static(RES_DIR) );
+app.use( "/dist", express.static(DIST_DIR) );
 
 //Register Routes
-for(var route in mainRoutes){
-    app.use("/", mainRoutes[route]());
-}
+require('./routes/home')(app);
+require('./routes/songs')(app);
 
 
+
+
+//set options
+let options = {};
+/*
+try{
+options = 
+{
+   cert: fs.readFileSync(__dirname+'/private/localhost.crt', 'utf8'),
+   key: fs.readFileSync(__dirname+'/private/localhost.key', 'utf8'),
+};
+}catch(e){console.log(":::::: Fs Error: \n::: "+e);}
+*/
+
+
+
+// Create HTTPs server.
+config.server = require('https').
+createServer(options, app).listen(config.PORT, function(){
+    var message = 'EXPRESS Server Started at  :::::> \ \  \ '
+    +config.URL
+    +":" 
+    +config.PORT;
+    console.log(message);
+});
+/*
 //Start the server
 config.server = app.listen(config.PORT, function(){
-    var message = 'Connected to EXPRESS Server at - '+
-    config.URL+ ":" +config.PORT;
+    var message = 'Connected to EXPRESS Server at-'
+    +config.URL
+    +":" 
+    +config.PORT;
     console.log(message);
-    
 });
+*/
+
+
+
+
+
+//--- /storage/emulated/0/compilerInternalSonyX/projects/Branch1/web_projects/download_site_pevn/inlink/download_site_pevn/

@@ -1,0 +1,123 @@
+
+#latestposts-feed{
+    margin-top: 40px;
+    margin-bottom: 20px;
+}
+#latestposts-feed-header{
+    font-size: 20px; font-family: hF;
+    padding-left: 10px;
+}
+
+.lpost-container{
+    display: block; width: 90%; height: 120px;
+    border: 1px solid var(--col-bg-ter); border-radius: 15px;
+    margin-left: 20px; padding: 5px; 
+    overflow: hidden; overflow-wrap: break-word;
+    margin: 10px auto; text-overflow: ellipsis-word;
+    
+}
+.lpost-container p,time{ 
+    font-family: pF; margin-bottom: 0px; margin-top: 0px;
+    color: black; font-size: 13px;
+}
+
+
+.lpost-mainimage{ overflow: hidden; border-radius: 15px; width: 50%; height: 100%; float: left;}
+.lpost-infocontainer{ width: 50%; float:left; box-sizing: border-box; padding-left: 10px; }
+.lpost-posttopic{ font-size: 17px; font-family: hF; 
+    color: var(--col-text-pri-2); margin-top: 1px;}
+.lpost-postauthor{ font-weight: bold;}
+.lpost-postauthor::before{ content: 'by '; font-weight: normal; }
+
+
+
+
+
+
+
+    
+    
+    
+#featuredposts-feed{
+    margin-top: 40px;
+    margin-bottom: 20px;
+}
+#featuredposts-feed-header{
+    font-size: 20px; font-family: hF;
+    padding-left: 10px;
+}
+
+.fpost-container{
+    display: block; width: 90%;
+    border-radius: 15px;
+    margin-left: 20px; //padding: 5px; 
+    overflow: hidden; overflow-wrap: break-word;
+    margin: 10px auto; text-overflow: ellipsis-word;
+    background-color: #e7e7ee; box-shadow: 1px solid grey;
+    
+}
+.fpost-container p,time{ 
+    font-family: pF; margin-bottom: 0px; margin-top: 0px;
+    color: black; font-size: 13px;
+}
+
+
+.fpost-mainimage{ 
+    overflow: hidden; border-radius: 15px;
+    width: 100%; max-height:150px;}
+.fpost-infocontainer{
+    margin: 5px;
+}
+.fpost-posttopic{ font-size: 17px; font-family: hF; color: var(--col-text-pri-2);  margin-top: 10px;}
+.fpost-postauthor{ font-weight: bold;}
+.fpost-postauthor::before{ content: 'by '; font-weight: normal; }
+
+
+
+
+
+
+
+
+
+#relatedposts-feed{
+    margin-top: 40px;
+    margin-bottom: 20px;
+}
+#relatedposts-feed-header{
+    font-size: 20px; font-family: hF;
+}
+
+.rpost-container{
+    display: block; width: 90%; height: 120px;
+    border: 1px solid var(--col-bg-ter); border-radius: 15px;
+    margin-left: 20px; padding: 5px; 
+    overflow: hidden; overflow-wrap: break-word;
+    margin: 10px auto; text-overflow: ellipsis-word;
+    
+}
+.rpost-container p,time{ 
+    font-family: pF; margin-bottom: 0px; margin-top: 0px;
+    color: black; font-size: 13px;
+}
+
+
+.rpost-mainimage{ overflow: hidden; border-radius: 15px; width: 50%; height: 100%; float: left;}
+.rpost-posttopic{ font-size: 15px; font-family: hF; color: var(--col-text-pri-2); margin-top: 1px;}
+.rpost-postauthor{ font-weight: bold;}
+.rpost-postauthor{ content: 'by '; }
+
+
+
+
+@media only screen and (min-width: 601px) and (max-width: 1280px) {
+    #posts-feed{
+        display: inline-block;
+        margin-bottom: 1px;
+        width: 100%; 
+    }
+    #latestposts-feed,#featuredposts-feed,#relatedposts-feed{
+        width: 50%; float: left;
+    }
+    
+}
